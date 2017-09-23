@@ -21,6 +21,7 @@ var connector = new builder.ChatConnector({
 server.post('/api/messages', connector.listen());
 server.use(restify.plugins.queryParser());
 server.get("/api/oauthcallback", function (req, res, next) {
+  var code = req.params.code;
   var postData = {
     grant_type: "authorization_code",
     code: code,
