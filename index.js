@@ -20,14 +20,14 @@ var connector = new builder.ChatConnector({
 
 server.post('/api/messages', connector.listen());
 server.use(restify.plugins.queryParser());
-server.get("/api/oauthcallback", function (req, res, next) {
+server.get("/api/oauthcallback", function (req, res) {
   var code = req.params.code;
   var postData = {
     grant_type: "authorization_code",
     code: code,
     client_id: process.env.COINBASE_CLIENT_ID,
     client_secret: process.env.COINBASE_CLIENT_SECRET,
-    redirect_uri: "https://cryptochatbot.herokuapp.com/api/oauthsuccess"
+    redirect_uri: "https://e7c80afd.ngrok.io/api/oauthsuccess"
   }
   var url = 'https://api.coinbase.com/oauth/token';
   var options = {
@@ -41,10 +41,8 @@ server.get("/api/oauthcallback", function (req, res, next) {
       console.error('Error getting token: ', err)
       throw err
     }
-    bot.beginDialog("/oauth-success", body.access_token);
+    res.send(200, body);
   })
-  res.send(200, {});
-  return next();
 });
 
 /**
@@ -99,9 +97,9 @@ bot.dialog("/profile", [
 ]);
 
 bot.dialog("/login", function (session) {
-  var redirectURL = 'https://cryptochatbot.herokuapp.com/api/oauthcallback';
+  var redirectURL = 'https://e7c80afd.ngrok.io/api/oauthcallback';
   var url = 'https://www.coinbase.com/oauth/authorize?response_type=code&client_id=' + process.env.COINBASE_CLIENT_ID + '&redirect_uri=' + encodeURIComponent(redirectURL) + '&scope=wallet:accounts:read'
-
+  console.log(session);
   session.send(new builder.Message(session).addAttachment(
     new builder.SigninCard(session)
     .text("Authenticate with Coinbase")
