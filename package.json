@@ -1,0 +1,17 @@
+{
+  "name": "cryptochatbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "botbuilder": "^3.10.1",
+    "dotenv": "^4.0.0",
+    "restify": "^6.0.1"
+  }
+}
