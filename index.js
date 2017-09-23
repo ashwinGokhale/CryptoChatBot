@@ -1,12 +1,13 @@
 var restify = require('restify');
 const builder = require('botbuilder');
+var request = require('request');
 require('dotenv').config()
 
 // Setup Restify Server
 
 var server = restify.createServer();
 
-server.listen(process.env.PORT || 3001, function () {
+server.listen(process.env.PORT || 4000, function () {
   console.log('%s <li></li>stening to %s', server.name, server.url);
 });
 
@@ -18,13 +19,29 @@ var connector = new builder.ChatConnector({
 });
 
 server.post('/api/messages', connector.listen());
+server.use(restify.plugins.queryParser());
 server.get("/api/oauthcallback", function (req, res, next) {
-  console.log("OAUTH CALLBACK");
-  /*var authCode = req.query.code,
-    address = JSON.parse(req.query.state),
-    oauth = getOAuthClient();*/
-  console.log(req);
-  //bot.beginDialog(address, "/oauth-success", tokens);
+  var postData = {
+    grant_type: "authorization_code",
+    code: code,
+    client_id: process.env.COINBASE_CLIENT_ID,
+    client_secret: process.env.COINBASE_CLIENT_SECRET,
+    redirect_uri: "https://cryptochatbot.herokuapp.com/api/oauthsuccess"
+  }
+  var url = 'https://api.coinbase.com/oauth/token';
+  var options = {
+    method: 'post',
+    body: postData,
+    json: true,
+    url: url
+  }
+  request(options, function (err, res, body) {
+    if (err) {
+      console.error('Error getting token: ', err)
+      throw err
+    }
+    bot.beginDialog("/oauth-success", body.access_token);
+  })
   res.send(200, {});
   return next();
 });
@@ -81,7 +98,7 @@ bot.dialog("/profile", [
 ]);
 
 bot.dialog("/login", function (session) {
-  var redirectURL = 'https://0d915e12.ngrok.io/api/oauthcallback';
+  var redirectURL = 'https://cryptochatbot.herokuapp.com/api/oauthcallback';
   var url = 'https://www.coinbase.com/oauth/authorize?response_type=code&client_id=' + process.env.COINBASE_CLIENT_ID + '&redirect_uri=' + encodeURIComponent(redirectURL) + '&scope=wallet:accounts:read'
 
   session.send(new builder.Message(session).addAttachment(
@@ -93,23 +110,7 @@ bot.dialog("/login", function (session) {
 //https%3A%2F%2Fexample.com%2Foauth%2Fcallback
 //https%3A%2F%2Fcryptobotbitcoin.azurewebsites.net%2Fapi%2Foauthcallback
 
-bot.dialog("/oauth-success", function (session, tokens) {
-  session.privateConversationData.tokens = tokens;
-  session.send("oAuth Success!");
-
-  people.people.get({
-    resourceName: "people/me",
-    auth: oauth
-  }, function (err, response) {
-    if (!err) {
-      if (response.names && response.names.length > 0) {
-        var name = response.names[0].givenName || response.names[0].displayName;
-        session.privateConversationData.name = name;
-        session.send("Nice to meet you, %s!", name);
-      }
-    } else {
-      session.send("There was an error retrieving your profile.");
-    }
-    session.endDialog();
-  });
+bot.dialog("/oauth-success", function (session, token) {
+  session.privateConversationData.tokens = token;
+  session.send("Success logging in!");
 });

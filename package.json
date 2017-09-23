@@ -12,6 +12,7 @@
   "dependencies": {
     "botbuilder": "^3.10.1",
     "dotenv": "^4.0.0",
+    "request": "^2.82.0",
     "restify": "^6.0.1"
   }
 }
