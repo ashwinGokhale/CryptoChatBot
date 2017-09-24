@@ -30,7 +30,7 @@ app.get("/api/oauthcallback", function (req, res) {
     code: code,
     client_id: process.env.COINBASE_CLIENT_ID,
     client_secret: process.env.COINBASE_CLIENT_SECRET,
-    redirect_uri: "https://e7c80afd.ngrok.io/api/oauthcallback"
+    redirect_uri: "https://cryptochatbot.herokuapp.com/api/oauthcallback"
   }
   var url = 'https://api.coinbase.com/oauth/token';
   var options = {
@@ -173,7 +173,7 @@ bot.dialog("/profile", [
 
 bot.dialog("/login", [
   function (session) {
-    var redirectURL = 'https://e7c80afd.ngrok.io/api/oauthcallback';
+    var redirectURL = 'https://cryptochatbot.herokuapp.com/api/oauthcallback';
     var url = 'https://www.coinbase.com/oauth/authorize?response_type=code&client_id=' + process.env.COINBASE_CLIENT_ID + '&redirect_uri=' + encodeURIComponent(redirectURL) + '&scope=wallet:accounts:read';
     builder.Prompts.text(session, new builder.Message(session).addAttachment(
       new builder.SigninCard(session)
