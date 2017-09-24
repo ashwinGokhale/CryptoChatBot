@@ -13,7 +13,6 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 
-
 // Create chat bot
 var connector = new builder.ChatConnector({
   appId: process.env.BOT_APP_ID,
@@ -50,10 +49,9 @@ app.get("/api/oauthcallback", function (req, res) {
 
 });
 
-app.listen(4000, function () {
-  console.log('App listening on port 4000!')
+app.listen(process.env.PORT || 4000, function () {
+  console.log('App listening on port!')
 })
-
 
 /**
  * Bots Dialogs
@@ -135,6 +133,12 @@ intents.matches(/^how/i, [
   function (session) {
     var bitcoinAmount = Number(Math.round(String(session.userData.bitcoinBought) + 'e' + '8') + 'e-' + '8');
     session.send('You have ' + bitcoinAmount + ' bitcoins.');
+  }
+]);
+
+intents.matches(/^thanks/i, [
+  function (session) {
+    session.send("No problem! I'm always ready to help.");
   }
 ]);
 
